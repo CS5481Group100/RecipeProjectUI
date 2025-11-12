@@ -10,7 +10,20 @@
 <style>
 #app {
   height: 100vh;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

@@ -1,15 +1,5 @@
 <template>
   <div class="chat-view">
-    <!-- Header -->
-    <a-layout-header class="chat-header">
-      <div class="header-content">
-        <h1>AI对话助手</h1>
-        <a-button type="primary" danger size="small" @click="handleClearChat">
-          清空对话
-        </a-button>
-      </div>
-    </a-layout-header>
-
     <!-- Messages Container -->
     <a-layout-content class="chat-messages">
       <div v-if="messages.length === 0" class="empty-state">
@@ -26,9 +16,9 @@
     </a-layout-content>
 
     <!-- Input Footer -->
-    <a-layout-footer class="chat-footer">
+    <div class="chat-footer">
       <div class="input-wrapper">
-        <a-input-group compact>
+        <a-input-group compact class="chat-input-group">
           <a-input
             v-model:value="inputMessage"
             placeholder="输入你的消息..."
@@ -46,7 +36,7 @@
           </a-button>
         </a-input-group>
       </div>
-    </a-layout-footer>
+    </div>
   </div>
 </template>
 
@@ -115,12 +105,6 @@ const handleSendMessage = async () => {
   }
 }
 
-// 清空对话
-const handleClearChat = () => {
-  chatStore.clearMessages()
-  antMessage.success('对话已清空')
-}
-
 onMounted(() => {
   scrollToBottom()
 })
@@ -130,30 +114,8 @@ onMounted(() => {
 .chat-view {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color: #f5f5f5;
-}
-
-.chat-header {
+  height: 100%;
   background-color: white;
-  border-bottom: 1px solid #e8e8e8;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-}
-
-.header-content {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.chat-header h1 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #1890ff;
 }
 
 .chat-messages {
@@ -162,6 +124,11 @@ onMounted(() => {
   padding: 24px;
   display: flex;
   flex-direction: column;
+}
+
+.chat-input-group {
+  display: flex;
+  flex-direction: row;
 }
 
 .empty-state {
