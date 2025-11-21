@@ -47,6 +47,8 @@ import { sendMessage } from '@/api/chatService'
 import ChatMessage from '@/components/ChatMessage.vue'
 import { message as antMessage } from 'ant-design-vue'
 import { Layout } from 'ant-design-vue'
+import { supabase } from '@/lib/supabaseClient'
+
 
 const chatStore = useChatStore()
 const inputMessage = ref('')
@@ -104,6 +106,19 @@ const handleSendMessage = async () => {
     chatStore.setLoading(false)
   }
 }
+
+const instruments = ref([])
+
+async function getData() {
+  const { data } = await supabase.from('recipe_documents').select()
+  instruments.value = data
+  console.log(instruments.value)
+}
+
+const testsupabase = () => {
+  getData()
+}
+
 
 onMounted(() => {
   scrollToBottom()
