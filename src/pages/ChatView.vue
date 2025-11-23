@@ -104,6 +104,7 @@ const handleSendMessage = async () => {
         chatStore.addMessage({
           role: 'assistant',
           content: assistantContent,
+          meta: meta
         })
         // 获取最后添加的消息ID
         assistantMessageId = messages.value[messages.value.length - 1].id
@@ -112,6 +113,7 @@ const handleSendMessage = async () => {
         const lastMessage = messages.value[messages.value.length - 1]
         if (lastMessage && lastMessage.id === assistantMessageId) {
           lastMessage.content = assistantContent
+          lastMessage.meta = meta
         }
       }
 
