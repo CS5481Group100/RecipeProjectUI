@@ -11,8 +11,8 @@
         <div v-if="loading" class="loading-indicator">
           <a-spin tip="AI正在思考..." />
         </div>
+        <div ref="messagesEnd"></div>
       </div>
-      <div ref="messagesEnd"></div>
     </a-layout-content>
 
     <!-- Input Footer -->
@@ -43,12 +43,10 @@
 <script setup>
 import { ref, computed, nextTick, onMounted } from 'vue'
 import { useChatStore } from '@/stores/chatStore'
-import { sendMessage } from '@/api/chatService'
+import { sendStreamMessage } from '@/api/chatService'
 import ChatMessage from '@/components/ChatMessage.vue'
 import { message as antMessage } from 'ant-design-vue'
-import { Layout } from 'ant-design-vue'
-import { supabase } from '@/lib/supabaseClient'
-
+import { isEmpty } from 'lodash'
 
 const chatStore = useChatStore()
 const inputMessage = ref('')
@@ -81,18 +79,44 @@ const handleSendMessage = async () => {
 
   await scrollToBottom()
 
-  // 发送消息到API
+  // 发送消息到API（使用流式接口）
   chatStore.setLoading(true)
   try {
-    const response = await sendMessage(userMessage)
-    
-    // 添加AI回复
-    chatStore.addMessage({
-      role: 'assistant',
-      content: response.message || response.data || '收到您的消息',
-    })
+    let assistantContent = ''
+    let assistantMessageId = null
 
-    await scrollToBottom()
+    let meta = {}
+
+    await sendStreamMessage(userMessage, async (chunk, metastr) => {
+      assistantContent += chunk
+
+      if (isEmpty(meta) && metastr) {
+        try {
+          meta = JSON.parse(metastr)
+          console.log(meta)
+        } catch (e) {
+          console.error('解析元数据失败:', e)
+        }
+      }
+      
+      // 如果还没有创建AI消息，先创建一个
+      if (assistantMessageId === null) {
+        chatStore.addMessage({
+          role: 'assistant',
+          content: assistantContent,
+        })
+        // 获取最后添加的消息ID
+        assistantMessageId = messages.value[messages.value.length - 1].id
+      } else {
+        // 更新最后的AI消息内容
+        const lastMessage = messages.value[messages.value.length - 1]
+        if (lastMessage && lastMessage.id === assistantMessageId) {
+          lastMessage.content = assistantContent
+        }
+      }
+
+      await scrollToBottom()
+    })
   } catch (error) {
     console.error('发送消息失败:', error)
     antMessage.error('发送失败，请检查网络连接')
@@ -107,19 +131,6 @@ const handleSendMessage = async () => {
   }
 }
 
-const instruments = ref([])
-
-async function getData() {
-  const { data } = await supabase.from('recipe_documents').select()
-  instruments.value = data
-  console.log(instruments.value)
-}
-
-const testsupabase = () => {
-  getData()
-}
-
-
 onMounted(() => {
   scrollToBottom()
 })
@@ -131,14 +142,17 @@ onMounted(() => {
   flex-direction: column;
   height: 100%;
   background-color: white;
+  /* allow inner flex children to scroll correctly */
+  min-height: 0;
 }
 
 .chat-messages {
   flex: 1;
-  overflow-y: auto;
   padding: 24px;
   display: flex;
   flex-direction: column;
+  /* ensure children can define their own scroll area */
+  min-height: 0;
 }
 
 .chat-input-group {
@@ -160,6 +174,10 @@ onMounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
+  /* make messages list independently scrollable */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
 .loading-indicator {
@@ -180,21 +198,21 @@ onMounted(() => {
   width: 100%;
 }
 
-/* 美化滚动条 */
-.chat-messages::-webkit-scrollbar {
+/* 美化滚动条（应用到滚动的消息列表） */
+.messages-list::-webkit-scrollbar {
   width: 8px;
 }
 
-.chat-messages::-webkit-scrollbar-track {
+.messages-list::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
-.chat-messages::-webkit-scrollbar-thumb {
+.messages-list::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
 
-.chat-messages::-webkit-scrollbar-thumb:hover {
+.messages-list::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 </style>
