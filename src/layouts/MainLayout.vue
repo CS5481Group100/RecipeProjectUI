@@ -121,7 +121,7 @@ const handleMenuClick = (e) => {
 
 <style scoped>
 .main-layout {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
 }
 
@@ -200,7 +200,10 @@ const handleMenuClick = (e) => {
 
 .page-content {
   flex: 1;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  /* allow inner views to manage their own scrolling */
+  min-height: 0;
   background-color: #fafafa;
 }
 
