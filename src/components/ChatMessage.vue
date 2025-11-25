@@ -39,7 +39,7 @@
     </div>
 
     <!-- 右侧抽屉：显示 message.meta 或完整内容 -->
-    <a-drawer v-model:visible="drawerVisible" placement="right" width="420px" :closable="true">
+    <a-drawer v-model:visible="drawerVisible" placement="right" width="40%" :closable="true">
       <h3>消息详情</h3>
       <div style="margin-top: 12px;">
         <strong>内容：</strong>
