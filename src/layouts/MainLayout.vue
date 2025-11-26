@@ -24,13 +24,13 @@
           <template #icon>
             <MessageOutlined />
           </template>
-          <span>AI对话</span>
+          <span>Recipe Chat</span>
         </a-menu-item>
         <a-menu-item key="knowledge">
           <template #icon>
             <BookOutlined />
           </template>
-          <span>知识库管理</span>
+          <span>RAG Managent</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
@@ -88,8 +88,8 @@ const collapsed = ref(false)
 const selectedKeys = ref(['chat'])
 
 const pageTitle = {
-  Chat: 'AI对话助手',
-  Knowledge: '知识库管理',
+  Chat: 'Recipe Agent',
+  Knowledge: 'RAG Management',
 }
 
 const activePageTitle = computed(() => {

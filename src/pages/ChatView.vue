@@ -3,8 +3,8 @@
     <!-- Messages Container -->
     <a-layout-content class="chat-messages">
       <div v-if="messages.length === 0" class="empty-state">
-        <a-empty description="还没有对话记录" />
-        <p>开始与AI助手交流吧！</p>
+        <a-empty description="No Chat Records" />
+        <p>Start Chat with Recipe Agent</p>
       </div>
       <div v-else class="messages-list">
         <chat-message v-for="msg in messages" :key="msg.id" :message="msg" />
@@ -21,7 +21,7 @@
         <a-input-group compact class="chat-input-group">
           <a-input
             v-model:value="inputMessage"
-            placeholder="输入你的消息..."
+            placeholder="Input your message..."
             @keyup.enter="handleSendMessage"
             :disabled="loading"
             allow-clear
@@ -32,7 +32,7 @@
             :loading="loading"
             :disabled="!inputMessage.trim() || loading"
           >
-            发送
+            Send
           </a-button>
         </a-input-group>
       </div>
